@@ -61,23 +61,3 @@ func AuditLogger(appResources string, converter AppNameConverter) gin.HandlerFun
 			Msg("Successfully recorded database mutation by an application.")
 	}
 }
-
-//go:generate mockery --name=AppNameConverter --output=mocks --outpkg=mocks --case=underscore
-
-// AppNameConverter is an interface for converting keys to application names
-type AppNameConverter interface {
-	ConvertKeyToAppName(ctx *gin.Context, clients string, config string) (string, error)
-}
-
-type RealAppNameConverter struct{}
-
-func (r *RealAppNameConverter) ConvertKeyToAppName(ctx *gin.Context, clients string, config string) (string, error) {
-	// Actual implementation
-	return "test-app", nil
-}
-
-type MockAppNameConverter struct{}
-
-func (m *MockAppNameConverter) ConvertKeyToAppName(ctx *gin.Context, clients string, config string) (string, error) {
-	return "mock-app", nil // Mock behavior
-}

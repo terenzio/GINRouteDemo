@@ -7,21 +7,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// RealAppNameConverter is the real implementation of the AppNameConverter interface
-type RealAppNameConverter struct{}
-
-// ConvertKeyToAppName implements the actual conversion logic
-func (r *RealAppNameConverter) ConvertKeyToAppName(ctx *gin.Context, clients string, config string) (string, error) {
-	// This would contain the real logic for converting a key to an app name
-	return "real-app", nil
-}
 
 func main() {
 
-	// Create an instance of the real converter
-	appNameConverter := &RealAppNameConverter{}
+	// Choose the appropriate AppNameConverter implementation
+	var converter middleware.AppNameConverter
+	if isTestingEnvironment() {
+		converter = &middleware.MockAppNameConverter{}
+	} else {
+		converter = &middleware.RealAppNameConverter{}
+	}
 
-	auditLogger := middleware.AuditLogger("POST", appNameConverter)
+	auditLogger := middleware.AuditLogger("POST", converter)
 
 	router := gin.Default()
 
@@ -91,4 +88,10 @@ func main() {
 
 	// Start the server on port 8080
 	router.Run(":8080")
+}
+
+// isTestingEnvironment is a placeholder function to determine the environment.
+func isTestingEnvironment() bool {
+	// Implement environment detection logic here.
+	return false
 }
