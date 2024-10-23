@@ -1,19 +1,35 @@
 package main
 
 import (
+	"GINRouteDemo/middleware"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
+// RealAppNameConverter is the real implementation of the AppNameConverter interface
+type RealAppNameConverter struct{}
+
+// ConvertKeyToAppName implements the actual conversion logic
+func (r *RealAppNameConverter) ConvertKeyToAppName(ctx *gin.Context, clients string, config string) (string, error) {
+	// This would contain the real logic for converting a key to an app name
+	return "real-app", nil
+}
+
 func main() {
+
+	// Create an instance of the real converter
+	appNameConverter := &RealAppNameConverter{}
+
+	auditLogger := middleware.AuditLogger("POST", appNameConverter)
+
 	router := gin.Default()
 
 	// Group for Student-related APIs
 	studentGroup := router.Group("/students")
 	{
 		// Create a new student (POST)
-		studentGroup.POST("/", func(c *gin.Context) {
+		studentGroup.POST("/", auditLogger, func(c *gin.Context) {
 			c.String(http.StatusOK, "Student created")
 		})
 
